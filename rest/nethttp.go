@@ -39,14 +39,8 @@ func (api *NetHTTP) getQueryParameters(r *http.Request) catrina.QueryParameters 
 
 func (api *NetHTTP) sendResponse(w http.ResponseWriter, code int, body catrina.Payload, err error) error {
 
-	if code == http.StatusOK {
-		_, err = w.Write(body)
-	} else {
-		if err == nil {
-			err = getHttpError(code)
-		}
-		http.Error(w, err.Error(), code)
-	}
+	w.WriteHeader(code)	
+	_, err = w.Write(body)
 
 	return err
 }
