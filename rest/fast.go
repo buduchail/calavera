@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"net/http"
 	"github.com/valyala/fasthttp"
-	"github.com/buduchail/calavera"
+	"github.com/buduchail/catrina"
 )
 
 type (
@@ -24,19 +24,19 @@ func NewFast(prefix string) (api FastAPI) {
 	return api
 }
 
-func (api FastAPI) getBody(ctx *fasthttp.RequestCtx) calavera.Payload {
+func (api FastAPI) getBody(ctx *fasthttp.RequestCtx) catrina.Payload {
 	return ctx.Request.Body()
 }
 
-func (api FastAPI) getQueryParameters(ctx *fasthttp.RequestCtx) calavera.QueryParameters {
-	params := calavera.QueryParameters{}
+func (api FastAPI) getQueryParameters(ctx *fasthttp.RequestCtx) catrina.QueryParameters {
+	params := catrina.QueryParameters{}
 	ctx.QueryArgs().VisitAll(func(key, value []byte) {
 		params[string(key)] = []string{string(value)}
 	})
 	return params
 }
 
-func (api FastAPI) sendResponse(ctx *fasthttp.RequestCtx, code int, body calavera.Payload, err error) error {
+func (api FastAPI) sendResponse(ctx *fasthttp.RequestCtx, code int, body catrina.Payload, err error) error {
 
 	if code == http.StatusOK {
 		_, err = ctx.Write(body)
@@ -50,12 +50,12 @@ func (api FastAPI) sendResponse(ctx *fasthttp.RequestCtx, code int, body calaver
 	return err
 }
 
-func (api FastAPI) handleResource(method string, id calavera.ResourceID, parentIds []calavera.ResourceID, ctx *fasthttp.RequestCtx, handler calavera.ResourceHandler) (code int, body calavera.Payload, err error) {
+func (api FastAPI) handleResource(method string, id catrina.ResourceID, parentIds []catrina.ResourceID, ctx *fasthttp.RequestCtx, handler catrina.ResourceHandler) (code int, body catrina.Payload, err error) {
 
 	switch method {
 	case "POST":
 		if id != "" {
-			return http.StatusBadRequest, calavera.EmptyBody, errors.New("POST requests must not provide an ID")
+			return http.StatusBadRequest, catrina.EmptyBody, errors.New("POST requests must not provide an ID")
 		}
 		return handler.Post(parentIds, api.getBody(ctx))
 	case "GET":
@@ -66,17 +66,17 @@ func (api FastAPI) handleResource(method string, id calavera.ResourceID, parentI
 		}
 	case "PUT":
 		if id == "" {
-			return http.StatusBadRequest, calavera.EmptyBody, errors.New("PUT method must provide an ID")
+			return http.StatusBadRequest, catrina.EmptyBody, errors.New("PUT method must provide an ID")
 		}
 		return handler.Put(id, parentIds, api.getBody(ctx))
 	case "DELETE":
 		if id == "" {
-			return http.StatusBadRequest, calavera.EmptyBody, errors.New("DELETE method must provide an ID")
+			return http.StatusBadRequest, catrina.EmptyBody, errors.New("DELETE method must provide an ID")
 		}
 		return handler.Delete(id, parentIds)
 	}
 
-	return http.StatusMethodNotAllowed, calavera.EmptyBody, errors.New("Method not allowed")
+	return http.StatusMethodNotAllowed, catrina.EmptyBody, errors.New("Method not allowed")
 }
 
 func (api FastAPI) handle(ctx *fasthttp.RequestCtx) {
@@ -87,7 +87,7 @@ func (api FastAPI) handle(ctx *fasthttp.RequestCtx) {
 
 		handler, id, parentIds := api.root.findHandler(path[api.prefixLen:])
 		if handler == nil {
-			api.sendResponse(ctx, http.StatusNotFound, calavera.EmptyBody, nil)
+			api.sendResponse(ctx, http.StatusNotFound, catrina.EmptyBody, nil)
 			return
 		}
 
@@ -95,15 +95,15 @@ func (api FastAPI) handle(ctx *fasthttp.RequestCtx) {
 		api.sendResponse(ctx, code, body, err)
 
 	} else {
-		api.sendResponse(ctx, http.StatusNotFound, calavera.EmptyBody, nil)
+		api.sendResponse(ctx, http.StatusNotFound, catrina.EmptyBody, nil)
 	}
 }
 
-func (api FastAPI) AddResource(name string, handler calavera.ResourceHandler) {
+func (api FastAPI) AddResource(name string, handler catrina.ResourceHandler) {
 	api.root.addHandler(name, handler)
 }
 
-func (api FastAPI) AddMiddleware(m calavera.Middleware) {
+func (api FastAPI) AddMiddleware(m catrina.Middleware) {
 	// NOT IMPLEMENTED
 }
 

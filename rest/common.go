@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"net/http"
 
-	"github.com/buduchail/calavera"
+	"github.com/buduchail/catrina"
 )
 
 var (
@@ -24,7 +24,7 @@ var (
 	}
 )
 
-func NewApi(prefix, router string) calavera.RestAPI {
+func NewApi(prefix, router string) catrina.RestAPI {
 
 	switch router {
 	case "n", routers["n"]:

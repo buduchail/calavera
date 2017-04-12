@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"io/ioutil"
 	"github.com/emicklei/go-restful"
-	"github.com/buduchail/calavera"
+	"github.com/buduchail/catrina"
 )
 
 type (
@@ -23,25 +23,25 @@ func NewGoRestful(prefix string) (api GoRestfulAPI) {
 	return api
 }
 
-func (api GoRestfulAPI) getBody(rq *restful.Request) calavera.Payload {
+func (api GoRestfulAPI) getBody(rq *restful.Request) catrina.Payload {
 	b, _ := ioutil.ReadAll(rq.Request.Body)
 	return bytes.NewBuffer(b).Bytes()
 }
 
-func (api GoRestfulAPI) getQueryParameters(rq *restful.Request) calavera.QueryParameters {
-	return calavera.QueryParameters(rq.Request.URL.Query())
+func (api GoRestfulAPI) getQueryParameters(rq *restful.Request) catrina.QueryParameters {
+	return catrina.QueryParameters(rq.Request.URL.Query())
 }
 
-func (api GoRestfulAPI) getParentIds(rq *restful.Request, idParams []string) (ids []calavera.ResourceID) {
-	ids = make([]calavera.ResourceID, 0)
+func (api GoRestfulAPI) getParentIds(rq *restful.Request, idParams []string) (ids []catrina.ResourceID) {
+	ids = make([]catrina.ResourceID, 0)
 	for _, id := range idParams {
 		// prepend: /grandparent/1/parent/2/child/3 -> [2,1]
-		ids = append([]calavera.ResourceID{calavera.ResourceID(rq.Request.URL.Query().Get(id))}, ids...)
+		ids = append([]catrina.ResourceID{catrina.ResourceID(rq.Request.URL.Query().Get(id))}, ids...)
 	}
 	return ids
 }
 
-func (api GoRestfulAPI) sendResponse(rp *restful.Response, code int, body calavera.Payload, err error) {
+func (api GoRestfulAPI) sendResponse(rp *restful.Response, code int, body catrina.Payload, err error) {
 
 	if code != http.StatusOK || err != nil {
 		if err == nil {
@@ -53,7 +53,7 @@ func (api GoRestfulAPI) sendResponse(rp *restful.Response, code int, body calave
 	}
 }
 
-func (api GoRestfulAPI) AddResource(name string, handler calavera.ResourceHandler) {
+func (api GoRestfulAPI) AddResource(name string, handler catrina.ResourceHandler) {
 
 	path, parentIdParams, idParam := expandPath(name, "{%s}")
 
@@ -67,7 +67,7 @@ func (api GoRestfulAPI) AddResource(name string, handler calavera.ResourceHandle
 
 	getRoute := func(rq *restful.Request, rp *restful.Response) {
 		code, body, err := handler.Get(
-			calavera.ResourceID(rq.PathParameter("id")),
+			catrina.ResourceID(rq.PathParameter("id")),
 			api.getParentIds(rq, parentIdParams),
 		)
 		api.sendResponse(rp, code, body, err)
@@ -83,7 +83,7 @@ func (api GoRestfulAPI) AddResource(name string, handler calavera.ResourceHandle
 
 	putRoute := func(rq *restful.Request, rp *restful.Response) {
 		code, body, err := handler.Put(
-			calavera.ResourceID(rq.PathParameter("id")),
+			catrina.ResourceID(rq.PathParameter("id")),
 			api.getParentIds(rq, parentIdParams),
 			api.getBody(rq),
 		)
@@ -92,7 +92,7 @@ func (api GoRestfulAPI) AddResource(name string, handler calavera.ResourceHandle
 
 	deleteRoute := func(rq *restful.Request, rp *restful.Response) {
 		code, body, err := handler.Delete(
-			calavera.ResourceID(rq.PathParameter("id")),
+			catrina.ResourceID(rq.PathParameter("id")),
 			api.getParentIds(rq, parentIdParams),
 		)
 		api.sendResponse(rp, code, body, err)
@@ -118,7 +118,7 @@ func (api GoRestfulAPI) AddResource(name string, handler calavera.ResourceHandle
 	api.container.Add(ws)
 }
 
-func (api GoRestfulAPI) AddMiddleware(m calavera.Middleware) {
+func (api GoRestfulAPI) AddMiddleware(m catrina.Middleware) {
 	// NOT IMPLEMENTED
 }
 

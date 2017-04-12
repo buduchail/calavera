@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"io/ioutil"
 	"github.com/julienschmidt/httprouter"
-	"github.com/buduchail/calavera"
+	"github.com/buduchail/catrina"
 )
 
 type (
@@ -23,25 +23,25 @@ func NewHttpRouter(prefix string) (api HttpRouterAPI) {
 	return api
 }
 
-func (api HttpRouterAPI) getBody(r *http.Request) calavera.Payload {
+func (api HttpRouterAPI) getBody(r *http.Request) catrina.Payload {
 	b, _ := ioutil.ReadAll(r.Body)
 	return bytes.NewBuffer(b).Bytes()
 }
 
-func (api HttpRouterAPI) getQueryParameters(r *http.Request) calavera.QueryParameters {
-	return calavera.QueryParameters(r.URL.Query())
+func (api HttpRouterAPI) getQueryParameters(r *http.Request) catrina.QueryParameters {
+	return catrina.QueryParameters(r.URL.Query())
 }
 
-func (api HttpRouterAPI) getParentIds(ps httprouter.Params, idParams []string) (ids []calavera.ResourceID) {
-	ids = make([]calavera.ResourceID, 0)
+func (api HttpRouterAPI) getParentIds(ps httprouter.Params, idParams []string) (ids []catrina.ResourceID) {
+	ids = make([]catrina.ResourceID, 0)
 	for _, id := range idParams {
 		// prepend: /grandparent/1/parent/2/child/3 -> [2,1]
-		ids = append([]calavera.ResourceID{calavera.ResourceID(ps.ByName(id))}, ids...)
+		ids = append([]catrina.ResourceID{catrina.ResourceID(ps.ByName(id))}, ids...)
 	}
 	return ids
 }
 
-func (api HttpRouterAPI) sendResponse(w http.ResponseWriter, code int, body calavera.Payload, err error) {
+func (api HttpRouterAPI) sendResponse(w http.ResponseWriter, code int, body catrina.Payload, err error) {
 	if code != http.StatusOK || err != nil {
 		if err == nil {
 			err = getHttpError(code)
@@ -52,7 +52,7 @@ func (api HttpRouterAPI) sendResponse(w http.ResponseWriter, code int, body cala
 	}
 }
 
-func (api HttpRouterAPI) AddResource(name string, handler calavera.ResourceHandler) {
+func (api HttpRouterAPI) AddResource(name string, handler catrina.ResourceHandler) {
 
 	path, parentIdParams, idParam := expandPath(name, ":%s")
 
@@ -66,7 +66,7 @@ func (api HttpRouterAPI) AddResource(name string, handler calavera.ResourceHandl
 
 	getRoute := func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		code, body, err := handler.Get(
-			calavera.ResourceID(ps.ByName(idParam)),
+			catrina.ResourceID(ps.ByName(idParam)),
 			api.getParentIds(ps, parentIdParams),
 		)
 		api.sendResponse(w, code, body, err)
@@ -82,7 +82,7 @@ func (api HttpRouterAPI) AddResource(name string, handler calavera.ResourceHandl
 
 	putRoute := func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		code, body, err := handler.Put(
-			calavera.ResourceID(ps.ByName(idParam)),
+			catrina.ResourceID(ps.ByName(idParam)),
 			api.getParentIds(ps, parentIdParams),
 			api.getBody(r),
 		)
@@ -91,7 +91,7 @@ func (api HttpRouterAPI) AddResource(name string, handler calavera.ResourceHandl
 
 	deleteRoute := func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		code, body, err := handler.Delete(
-			calavera.ResourceID(ps.ByName(idParam)),
+			catrina.ResourceID(ps.ByName(idParam)),
 			api.getParentIds(ps, parentIdParams),
 		)
 		api.sendResponse(w, code, body, err)
@@ -111,7 +111,7 @@ func (api HttpRouterAPI) AddResource(name string, handler calavera.ResourceHandl
 	api.r.DELETE(fullPath+"/:"+idParam, deleteRoute)
 }
 
-func (api HttpRouterAPI) AddMiddleware(m calavera.Middleware) {
+func (api HttpRouterAPI) AddMiddleware(m catrina.Middleware) {
 	// NOT IMPLEMENTED
 }
 

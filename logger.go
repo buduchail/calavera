@@ -1,4 +1,4 @@
-package calavera
+package catrina
 
 type (
 	// The stdlib logger does not provide an interface, so it's not possible to use

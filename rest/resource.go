@@ -2,7 +2,7 @@ package rest
 
 import (
 	"net/http"
-	"github.com/buduchail/calavera"
+	"github.com/buduchail/catrina"
 )
 
 type (
@@ -16,26 +16,26 @@ type (
 	}
 )
 
-func (s ResourceHandler) Options() (code int, body calavera.Payload, err error) {
-	return http.StatusOK, calavera.EmptyBody, nil
+func (s ResourceHandler) Options() (code int, body catrina.Payload, err error) {
+	return http.StatusOK, catrina.EmptyBody, nil
 }
 
-func (s ResourceHandler) Post(parentIds []calavera.ResourceID, payload calavera.Payload) (code int, body calavera.Payload, err error) {
-	return http.StatusMethodNotAllowed, calavera.EmptyBody, nil
+func (s ResourceHandler) Post(parentIds []catrina.ResourceID, payload catrina.Payload) (code int, body catrina.Payload, err error) {
+	return http.StatusMethodNotAllowed, catrina.EmptyBody, nil
 }
 
-func (s ResourceHandler) Get(id calavera.ResourceID, parentIds []calavera.ResourceID) (code int, body calavera.Payload, err error) {
-	return http.StatusMethodNotAllowed, calavera.EmptyBody, nil
+func (s ResourceHandler) Get(id catrina.ResourceID, parentIds []catrina.ResourceID) (code int, body catrina.Payload, err error) {
+	return http.StatusMethodNotAllowed, catrina.EmptyBody, nil
 }
 
-func (s ResourceHandler) GetMany(parentIds []calavera.ResourceID, params calavera.QueryParameters) (code int, body calavera.Payload, err error) {
-	return http.StatusMethodNotAllowed, calavera.EmptyBody, nil
+func (s ResourceHandler) GetMany(parentIds []catrina.ResourceID, params catrina.QueryParameters) (code int, body catrina.Payload, err error) {
+	return http.StatusMethodNotAllowed, catrina.EmptyBody, nil
 }
 
-func (s ResourceHandler) Put(id calavera.ResourceID, parentIds []calavera.ResourceID, payload calavera.Payload) (code int, body calavera.Payload, err error) {
-	return http.StatusMethodNotAllowed, calavera.EmptyBody, nil
+func (s ResourceHandler) Put(id catrina.ResourceID, parentIds []catrina.ResourceID, payload catrina.Payload) (code int, body catrina.Payload, err error) {
+	return http.StatusMethodNotAllowed, catrina.EmptyBody, nil
 }
 
-func (s ResourceHandler) Delete(id calavera.ResourceID, parentIds []calavera.ResourceID) (code int, body calavera.Payload, err error) {
-	return http.StatusMethodNotAllowed, calavera.EmptyBody, nil
+func (s ResourceHandler) Delete(id catrina.ResourceID, parentIds []catrina.ResourceID) (code int, body catrina.Payload, err error) {
+	return http.StatusMethodNotAllowed, catrina.EmptyBody, nil
 }

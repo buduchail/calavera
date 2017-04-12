@@ -1,4 +1,4 @@
-package calavera
+package catrina
 
 import "net/http"
 

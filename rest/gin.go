@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"io/ioutil"
 	"github.com/gin-gonic/gin"
-	"github.com/buduchail/calavera"
+	"github.com/buduchail/catrina"
 )
 
 type (
@@ -24,25 +24,25 @@ func NewGin(prefix string) (api GinAPI) {
 	return api
 }
 
-func (api GinAPI) getBody(c *gin.Context) calavera.Payload {
+func (api GinAPI) getBody(c *gin.Context) catrina.Payload {
 	b, _ := ioutil.ReadAll(c.Request.Body)
 	return bytes.NewBuffer(b).Bytes()
 }
 
-func (api GinAPI) getQueryParameters(c *gin.Context) calavera.QueryParameters {
-	return calavera.QueryParameters(c.Request.URL.Query())
+func (api GinAPI) getQueryParameters(c *gin.Context) catrina.QueryParameters {
+	return catrina.QueryParameters(c.Request.URL.Query())
 }
 
-func (api GinAPI) getParentIds(c *gin.Context, idParams []string) (ids []calavera.ResourceID) {
-	ids = make([]calavera.ResourceID, 0)
+func (api GinAPI) getParentIds(c *gin.Context, idParams []string) (ids []catrina.ResourceID) {
+	ids = make([]catrina.ResourceID, 0)
 	for _, id := range idParams {
 		// prepend: /grandparent/1/parent/2/child/3 -> [2,1]
-		ids = append([]calavera.ResourceID{calavera.ResourceID(c.Param(id))}, ids...)
+		ids = append([]catrina.ResourceID{catrina.ResourceID(c.Param(id))}, ids...)
 	}
 	return ids
 }
 
-func (api GinAPI) sendResponse(c *gin.Context, code int, body calavera.Payload, err error) {
+func (api GinAPI) sendResponse(c *gin.Context, code int, body catrina.Payload, err error) {
 
 	if code != http.StatusOK || err != nil {
 		if err == nil {
@@ -54,7 +54,7 @@ func (api GinAPI) sendResponse(c *gin.Context, code int, body calavera.Payload, 
 	}
 }
 
-func (api GinAPI) AddResource(name string, handler calavera.ResourceHandler) {
+func (api GinAPI) AddResource(name string, handler catrina.ResourceHandler) {
 
 	path, parentIdParams, idParam := expandPath(name, ":%s")
 
@@ -68,7 +68,7 @@ func (api GinAPI) AddResource(name string, handler calavera.ResourceHandler) {
 
 	getRoute := func(c *gin.Context) {
 		code, body, err := handler.Get(
-			calavera.ResourceID(c.Param(idParam)),
+			catrina.ResourceID(c.Param(idParam)),
 			api.getParentIds(c, parentIdParams),
 		)
 		api.sendResponse(c, code, body, err)
@@ -84,7 +84,7 @@ func (api GinAPI) AddResource(name string, handler calavera.ResourceHandler) {
 
 	putRoute := func(c *gin.Context) {
 		code, body, err := handler.Put(
-			calavera.ResourceID(c.Param(idParam)),
+			catrina.ResourceID(c.Param(idParam)),
 			api.getParentIds(c, parentIdParams),
 			api.getBody(c),
 		)
@@ -93,7 +93,7 @@ func (api GinAPI) AddResource(name string, handler calavera.ResourceHandler) {
 
 	deleteRoute := func(c *gin.Context) {
 		code, body, err := handler.Delete(
-			calavera.ResourceID(c.Param(idParam)),
+			catrina.ResourceID(c.Param(idParam)),
 			api.getParentIds(c, parentIdParams),
 		)
 		api.sendResponse(c, code, body, err)
@@ -113,7 +113,7 @@ func (api GinAPI) AddResource(name string, handler calavera.ResourceHandler) {
 	api.g.DELETE(fullPath+"/:"+idParam, deleteRoute)
 }
 
-func (api GinAPI) AddMiddleware(m calavera.Middleware) {
+func (api GinAPI) AddMiddleware(m catrina.Middleware) {
 	// NOT IMPLEMENTED
 }
 

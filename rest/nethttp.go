@@ -7,7 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/buduchail/calavera"
+	"github.com/buduchail/catrina"
 )
 
 type (
@@ -15,7 +15,7 @@ type (
 		root       *pathHandler
 		prefix     string
 		prefixLen  int
-		middleware []calavera.Middleware
+		middleware []catrina.Middleware
 	}
 )
 
@@ -24,20 +24,20 @@ func NewNetHTTP(prefix string) (api *NetHTTP) {
 	api.prefix = normalizePrefix(prefix)
 	api.prefixLen = len(api.prefix)
 	api.root = NewPathHandler(api.prefix)
-	api.middleware = make([]calavera.Middleware, 0)
+	api.middleware = make([]catrina.Middleware, 0)
 	return api
 }
 
-func (api *NetHTTP) getBody(r *http.Request) calavera.Payload {
+func (api *NetHTTP) getBody(r *http.Request) catrina.Payload {
 	b, _ := ioutil.ReadAll(r.Body)
 	return bytes.NewBuffer(b).Bytes()
 }
 
-func (api *NetHTTP) getQueryParameters(r *http.Request) calavera.QueryParameters {
-	return calavera.QueryParameters(r.URL.Query())
+func (api *NetHTTP) getQueryParameters(r *http.Request) catrina.QueryParameters {
+	return catrina.QueryParameters(r.URL.Query())
 }
 
-func (api *NetHTTP) sendResponse(w http.ResponseWriter, code int, body calavera.Payload, err error) error {
+func (api *NetHTTP) sendResponse(w http.ResponseWriter, code int, body catrina.Payload, err error) error {
 
 	if code == http.StatusOK {
 		_, err = w.Write(body)
@@ -51,14 +51,14 @@ func (api *NetHTTP) sendResponse(w http.ResponseWriter, code int, body calavera.
 	return err
 }
 
-func (api *NetHTTP) handleResource(method string, id calavera.ResourceID, parentIds []calavera.ResourceID, r *http.Request, handler calavera.ResourceHandler) (code int, body calavera.Payload, err error) {
+func (api *NetHTTP) handleResource(method string, id catrina.ResourceID, parentIds []catrina.ResourceID, r *http.Request, handler catrina.ResourceHandler) (code int, body catrina.Payload, err error) {
 
 	switch method {
 	case "OPTIONS":
 		return  handler.Options()
 	case "POST":
 		if id != "" {
-			return http.StatusBadRequest, calavera.EmptyBody, errors.New("POST requests must not provide an ID")
+			return http.StatusBadRequest, catrina.EmptyBody, errors.New("POST requests must not provide an ID")
 		}
 		return handler.Post(parentIds, api.getBody(r))
 	case "GET":
@@ -69,17 +69,17 @@ func (api *NetHTTP) handleResource(method string, id calavera.ResourceID, parent
 		}
 	case "PUT":
 		if id == "" {
-			return http.StatusBadRequest, calavera.EmptyBody, errors.New("PUT method must provide an ID")
+			return http.StatusBadRequest, catrina.EmptyBody, errors.New("PUT method must provide an ID")
 		}
 		return handler.Put(id, parentIds, api.getBody(r))
 	case "DELETE":
 		if id == "" {
-			return http.StatusBadRequest, calavera.EmptyBody, errors.New("DELETE method must provide an ID")
+			return http.StatusBadRequest, catrina.EmptyBody, errors.New("DELETE method must provide an ID")
 		}
 		return handler.Delete(id, parentIds)
 	}
 
-	return http.StatusMethodNotAllowed, calavera.EmptyBody, errors.New("Method not allowed")
+	return http.StatusMethodNotAllowed, catrina.EmptyBody, errors.New("Method not allowed")
 }
 
 func (api *NetHTTP) handle(w http.ResponseWriter, r *http.Request) {
@@ -88,7 +88,7 @@ func (api *NetHTTP) handle(w http.ResponseWriter, r *http.Request) {
 
 		handler, id, parentIds := api.root.findHandler(r.URL.Path[api.prefixLen:])
 		if handler == nil {
-			api.sendResponse(w, http.StatusNotFound, calavera.EmptyBody, nil)
+			api.sendResponse(w, http.StatusNotFound, catrina.EmptyBody, nil)
 			return
 		}
 
@@ -96,7 +96,7 @@ func (api *NetHTTP) handle(w http.ResponseWriter, r *http.Request) {
 		for _, m := range api.middleware {
 			err := m.Handle(w, r)
 			if err != nil {
-				api.sendResponse(w, http.StatusInternalServerError, calavera.EmptyBody, *err)
+				api.sendResponse(w, http.StatusInternalServerError, catrina.EmptyBody, *err)
 				return
 			}
 		}
@@ -105,15 +105,15 @@ func (api *NetHTTP) handle(w http.ResponseWriter, r *http.Request) {
 		api.sendResponse(w, code, body, err)
 
 	} else {
-		api.sendResponse(w, http.StatusNotFound, calavera.EmptyBody, nil)
+		api.sendResponse(w, http.StatusNotFound, catrina.EmptyBody, nil)
 	}
 }
 
-func (api *NetHTTP) AddResource(name string, handler calavera.ResourceHandler) {
+func (api *NetHTTP) AddResource(name string, handler catrina.ResourceHandler) {
 	api.root.addHandler(name, handler)
 }
 
-func (api *NetHTTP) AddMiddleware(m calavera.Middleware) {
+func (api *NetHTTP) AddMiddleware(m catrina.Middleware) {
 	api.middleware = append(api.middleware, m)
 }
 

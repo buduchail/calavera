@@ -7,7 +7,7 @@ import (
 	"io/ioutil"
 	"gopkg.in/kataras/iris.v6"
 	"gopkg.in/kataras/iris.v6/adaptors/httprouter"
-	"github.com/buduchail/calavera"
+	"github.com/buduchail/catrina"
 )
 
 type (
@@ -25,13 +25,13 @@ func NewIris(prefix string) (api IrisAPI) {
 	return api
 }
 
-func (api IrisAPI) getBody(c *iris.Context) calavera.Payload {
+func (api IrisAPI) getBody(c *iris.Context) catrina.Payload {
 	b, _ := ioutil.ReadAll(c.Request.Body)
 	return bytes.NewBuffer(b).Bytes()
 }
 
-func (api IrisAPI) getQueryParameters(c *iris.Context) calavera.QueryParameters {
-	params := calavera.QueryParameters{}
+func (api IrisAPI) getQueryParameters(c *iris.Context) catrina.QueryParameters {
+	params := catrina.QueryParameters{}
 	if nil != c.URLParamsAsMulti() {
 		for k, v := range c.URLParamsAsMulti() {
 			params[k] = v
@@ -40,16 +40,16 @@ func (api IrisAPI) getQueryParameters(c *iris.Context) calavera.QueryParameters 
 	return params
 }
 
-func (api IrisAPI) getParentIds(c *iris.Context, idParams []string) (ids []calavera.ResourceID) {
-	ids = make([]calavera.ResourceID, 0)
+func (api IrisAPI) getParentIds(c *iris.Context, idParams []string) (ids []catrina.ResourceID) {
+	ids = make([]catrina.ResourceID, 0)
 	for _, id := range idParams {
 		// prepend: /grandparent/1/parent/2/child/3 -> [2,1]
-		ids = append([]calavera.ResourceID{calavera.ResourceID(c.Param(id))}, ids...)
+		ids = append([]catrina.ResourceID{catrina.ResourceID(c.Param(id))}, ids...)
 	}
 	return ids
 }
 
-func (api IrisAPI) sendResponse(c *iris.Context, code int, body calavera.Payload, err error) {
+func (api IrisAPI) sendResponse(c *iris.Context, code int, body catrina.Payload, err error) {
 	if code != http.StatusOK || err != nil {
 		c.EmitError(code)
 	} else {
@@ -57,13 +57,13 @@ func (api IrisAPI) sendResponse(c *iris.Context, code int, body calavera.Payload
 	}
 }
 
-func (api IrisAPI) AddResource(name string, handler calavera.ResourceHandler) {
+func (api IrisAPI) AddResource(name string, handler catrina.ResourceHandler) {
 
 	path, parentIdParams, idParam := expandPath(name, ":%s")
 
 	postRoute := func(c *iris.Context) {
 		code, body, err := handler.Post(
-			[]calavera.ResourceID{},
+			[]catrina.ResourceID{},
 			api.getBody(c),
 		)
 		api.sendResponse(c, code, body, err)
@@ -71,7 +71,7 @@ func (api IrisAPI) AddResource(name string, handler calavera.ResourceHandler) {
 
 	getRoute := func(c *iris.Context) {
 		code, body, err := handler.Get(
-			calavera.ResourceID(c.Param(idParam)),
+			catrina.ResourceID(c.Param(idParam)),
 			api.getParentIds(c, parentIdParams),
 		)
 		api.sendResponse(c, code, body, err)
@@ -87,7 +87,7 @@ func (api IrisAPI) AddResource(name string, handler calavera.ResourceHandler) {
 
 	putRoute := func(c *iris.Context) {
 		code, body, err := handler.Put(
-			calavera.ResourceID(c.Param(idParam)),
+			catrina.ResourceID(c.Param(idParam)),
 			api.getParentIds(c, parentIdParams),
 			api.getBody(c),
 		)
@@ -96,7 +96,7 @@ func (api IrisAPI) AddResource(name string, handler calavera.ResourceHandler) {
 
 	deleteRoute := func(c *iris.Context) {
 		code, body, err := handler.Delete(
-			calavera.ResourceID(c.Param(idParam)),
+			catrina.ResourceID(c.Param(idParam)),
 			api.getParentIds(c, parentIdParams),
 		)
 		api.sendResponse(c, code, body, err)
@@ -116,7 +116,7 @@ func (api IrisAPI) AddResource(name string, handler calavera.ResourceHandler) {
 	api.i.Delete(fullPath+"/:"+idParam, deleteRoute)
 }
 
-func (api IrisAPI) AddMiddleware(m calavera.Middleware) {
+func (api IrisAPI) AddMiddleware(m catrina.Middleware) {
 	// NOT IMPLEMENTED
 }
 

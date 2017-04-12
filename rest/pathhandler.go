@@ -3,12 +3,12 @@ package rest
 import (
 	"bufio"
 	"strings"
-	"github.com/buduchail/calavera"
+	"github.com/buduchail/catrina"
 )
 
 type (
 	pathHandler struct {
-		handler  calavera.ResourceHandler
+		handler  catrina.ResourceHandler
 		resource string
 		children map[string]*pathHandler
 	}
@@ -22,7 +22,7 @@ func NewPathHandler(resource string) *pathHandler {
 	return ph
 }
 
-func (ph *pathHandler) addHandler(path string, handler calavera.ResourceHandler) {
+func (ph *pathHandler) addHandler(path string, handler catrina.ResourceHandler) {
 	var (
 		child, p *pathHandler
 		exists   bool
@@ -39,10 +39,10 @@ func (ph *pathHandler) addHandler(path string, handler calavera.ResourceHandler)
 	p.handler = handler
 }
 
-func (ph *pathHandler) findHandler(path string) (handler calavera.ResourceHandler, id calavera.ResourceID, parentIds []calavera.ResourceID) {
+func (ph *pathHandler) findHandler(path string) (handler catrina.ResourceHandler, id catrina.ResourceID, parentIds []catrina.ResourceID) {
 	handler = nil
 	id = ""
-	parentIds = make([]calavera.ResourceID, 0)
+	parentIds = make([]catrina.ResourceID, 0)
 
 	scanner := bufio.NewScanner(strings.NewReader(path))
 
@@ -76,7 +76,7 @@ func (ph *pathHandler) findHandler(path string) (handler calavera.ResourceHandle
 			}
 			p = child
 		} else {
-			parentIds = append(parentIds, calavera.ResourceID(scanner.Text()))
+			parentIds = append(parentIds, catrina.ResourceID(scanner.Text()))
 		}
 	}
 
@@ -85,5 +85,5 @@ func (ph *pathHandler) findHandler(path string) (handler calavera.ResourceHandle
 		parentIds = parentIds[:parts-1]
 	}
 
-	return p.handler, calavera.ResourceID(id), parentIds
+	return p.handler, catrina.ResourceID(id), parentIds
 }
