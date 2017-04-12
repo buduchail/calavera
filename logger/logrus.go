@@ -2,7 +2,7 @@ package logger
 
 import (
 	"io"
-	"github.com/buduchail/go-skeleton/interfaces"
+	"github.com/buduchail/calavera"
 	"github.com/sirupsen/logrus"
 )
 
@@ -11,11 +11,11 @@ type (
 	// logging structured data (logger context)
 	StructuredLogrus struct {
 		logger         *logrus.Logger
-		defaultContext interfaces.LoggerContext
+		defaultContext calavera.LoggerContext
 	}
 )
 
-func NewLogrus(context interfaces.LoggerContext) (logger *StructuredLogrus) {
+func NewLogrus(context calavera.LoggerContext) (logger *StructuredLogrus) {
 	logger = &StructuredLogrus{}
 	logger.logger = logrus.New()
 	logger.defaultContext = context
@@ -34,7 +34,7 @@ func (l *StructuredLogrus) SetLevel(level logrus.Level) {
 	l.logger.Level = level
 }
 
-func (l *StructuredLogrus) getFields(context *interfaces.LoggerContext) logrus.Fields {
+func (l *StructuredLogrus) getFields(context *calavera.LoggerContext) logrus.Fields {
 	var fields map[string]interface{}
 	if context != nil {
 		fields = *context
@@ -50,41 +50,41 @@ func (l *StructuredLogrus) getFields(context *interfaces.LoggerContext) logrus.F
 	return logrus.Fields(fields)
 }
 
-func (l *StructuredLogrus) Debug(message string, context *interfaces.LoggerContext) {
+func (l *StructuredLogrus) Debug(message string, context *calavera.LoggerContext) {
 	l.logger.WithFields(l.getFields(context)).
 		Debug(message)
 }
 
-func (l *StructuredLogrus) Info(message string, context *interfaces.LoggerContext) {
+func (l *StructuredLogrus) Info(message string, context *calavera.LoggerContext) {
 	l.logger.WithFields(l.getFields(context)).
 		Info(message)
 }
-func (l *StructuredLogrus) Print(message string, context *interfaces.LoggerContext) {
+func (l *StructuredLogrus) Print(message string, context *calavera.LoggerContext) {
 	l.logger.WithFields(l.getFields(context)).
 		Print(message)
 }
 
-func (l *StructuredLogrus) Warn(message string, context *interfaces.LoggerContext) {
+func (l *StructuredLogrus) Warn(message string, context *calavera.LoggerContext) {
 	l.logger.WithFields(l.getFields(context)).
 		Warn(message)
 }
 
-func (l *StructuredLogrus) Warning(message string, context *interfaces.LoggerContext) {
+func (l *StructuredLogrus) Warning(message string, context *calavera.LoggerContext) {
 	l.logger.WithFields(l.getFields(context)).
 		Warning(message)
 }
 
-func (l *StructuredLogrus) Error(message string, context *interfaces.LoggerContext) {
+func (l *StructuredLogrus) Error(message string, context *calavera.LoggerContext) {
 	l.logger.WithFields(l.getFields(context)).
 		Error(message)
 }
 
-func (l *StructuredLogrus) Fatal(message string, context *interfaces.LoggerContext) {
+func (l *StructuredLogrus) Fatal(message string, context *calavera.LoggerContext) {
 	l.logger.WithFields(l.getFields(context)).
 		Fatal(message)
 }
 
-func (l *StructuredLogrus) Panic(message string, context *interfaces.LoggerContext) {
+func (l *StructuredLogrus) Panic(message string, context *calavera.LoggerContext) {
 	l.logger.WithFields(l.getFields(context)).
 		Panic(message)
 }

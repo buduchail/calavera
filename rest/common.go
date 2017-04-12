@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"net/http"
 
-	"github.com/buduchail/go-skeleton/interfaces"
+	"github.com/buduchail/calavera"
 )
 
 var (
@@ -24,7 +24,7 @@ var (
 	}
 )
 
-func NewApi(prefix, router string) interfaces.RestAPI {
+func NewApi(prefix, router string) calavera.RestAPI {
 
 	switch router {
 	case "n", routers["n"]:

@@ -2,7 +2,7 @@ package rest
 
 import (
 	"net/http"
-	"github.com/buduchail/go-skeleton/interfaces"
+	"github.com/buduchail/calavera"
 )
 
 type (
@@ -16,26 +16,26 @@ type (
 	}
 )
 
-func (s ResourceHandler) Options() (code int, body interfaces.Payload, err error) {
-	return http.StatusOK, interfaces.EmptyBody, nil
+func (s ResourceHandler) Options() (code int, body calavera.Payload, err error) {
+	return http.StatusOK, calavera.EmptyBody, nil
 }
 
-func (s ResourceHandler) Post(parentIds []interfaces.ResourceID, payload interfaces.Payload) (code int, body interfaces.Payload, err error) {
-	return http.StatusMethodNotAllowed, interfaces.EmptyBody, nil
+func (s ResourceHandler) Post(parentIds []calavera.ResourceID, payload calavera.Payload) (code int, body calavera.Payload, err error) {
+	return http.StatusMethodNotAllowed, calavera.EmptyBody, nil
 }
 
-func (s ResourceHandler) Get(id interfaces.ResourceID, parentIds []interfaces.ResourceID) (code int, body interfaces.Payload, err error) {
-	return http.StatusMethodNotAllowed, interfaces.EmptyBody, nil
+func (s ResourceHandler) Get(id calavera.ResourceID, parentIds []calavera.ResourceID) (code int, body calavera.Payload, err error) {
+	return http.StatusMethodNotAllowed, calavera.EmptyBody, nil
 }
 
-func (s ResourceHandler) GetMany(parentIds []interfaces.ResourceID, params interfaces.QueryParameters) (code int, body interfaces.Payload, err error) {
-	return http.StatusMethodNotAllowed, interfaces.EmptyBody, nil
+func (s ResourceHandler) GetMany(parentIds []calavera.ResourceID, params calavera.QueryParameters) (code int, body calavera.Payload, err error) {
+	return http.StatusMethodNotAllowed, calavera.EmptyBody, nil
 }
 
-func (s ResourceHandler) Put(id interfaces.ResourceID, parentIds []interfaces.ResourceID, payload interfaces.Payload) (code int, body interfaces.Payload, err error) {
-	return http.StatusMethodNotAllowed, interfaces.EmptyBody, nil
+func (s ResourceHandler) Put(id calavera.ResourceID, parentIds []calavera.ResourceID, payload calavera.Payload) (code int, body calavera.Payload, err error) {
+	return http.StatusMethodNotAllowed, calavera.EmptyBody, nil
 }
 
-func (s ResourceHandler) Delete(id interfaces.ResourceID, parentIds []interfaces.ResourceID) (code int, body interfaces.Payload, err error) {
-	return http.StatusMethodNotAllowed, interfaces.EmptyBody, nil
+func (s ResourceHandler) Delete(id calavera.ResourceID, parentIds []calavera.ResourceID) (code int, body calavera.Payload, err error) {
+	return http.StatusMethodNotAllowed, calavera.EmptyBody, nil
 }
