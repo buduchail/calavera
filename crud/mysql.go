@@ -153,44 +153,41 @@ func (r *MySqlCRUD) getDeleteStatement() (*sql.Stmt, error) {
 	return r.stmt.deleteStatement, nil
 }
 
-func (r *MySqlCRUD) selectMany(where string, values []interface{}) <-chan catrina.Object {
+func (r *MySqlCRUD) selectMany(where string, values []interface{}) (<-chan catrina.Row, error) {
 
-	result := make(chan catrina.Object)
+	result := make(chan catrina.Row)
+
+	stmt, err := r.getSelectStatement(where)
+	if err != nil {
+		return nil, err
+	}
+
+	rows, err := stmt.Query(values...)
+	if err != nil {
+		return nil, err
+	}
 
 	go func() {
 		defer close(result)
-
-		stmt, err := r.getSelectStatement(where)
-		if err != nil {
-			// oops
-			panic(err)
-		}
-
-		rows, err := stmt.Query(values...)
-		if err != nil {
-			// oops
-			panic(err)
-		}
-
 		defer rows.Close()
 
 		for rows.Next() {
 			obj, err := r.hydrate(*rows)
 			if err != nil {
-				// oops
-				panic(err)
+				result <- catrina.Row{nil, err}
+			} else {
+				result <- catrina.Row{obj, nil}
 			}
-			result <- obj
 		}
 
 		err = rows.Err()
 		if err != nil {
-			// oops
-			panic(err)
+			// TODO: should we panic here?
+			result <- catrina.Row{nil, err}
 		}
 	}()
 
-	return result
+	return result, nil
 }
 
 func (r *MySqlCRUD) castValues(values []catrina.Value) []interface{} {
@@ -250,11 +247,10 @@ func (r *MySqlCRUD) Select(id catrina.Value) (catrina.Object, error) {
 	return r.hydrate(*rows)
 }
 
-func (r *MySqlCRUD) SelectWhereFields(fields []string, values []catrina.Value) <-chan catrina.Object {
+func (r *MySqlCRUD) SelectWhereFields(fields []string, values []catrina.Value) (<-chan catrina.Row, error) {
 
 	if len(fields) != len(values) {
-		// oops
-		panic(errors.New("Fields and values do not match"))
+		return nil, errors.New("Fields and values do not match")
 	}
 
 	where := ""
@@ -265,7 +261,7 @@ func (r *MySqlCRUD) SelectWhereFields(fields []string, values []catrina.Value) <
 	return r.selectMany(where[4:], r.castValues(values))
 }
 
-func (r *MySqlCRUD) SelectWhereRange(field string, min, max catrina.Value) <-chan catrina.Object {
+func (r *MySqlCRUD) SelectWhereRange(field string, min, max catrina.Value) (<-chan catrina.Row, error) {
 
 	return r.selectMany(
 		field+" BETWEEN ? AND ?",
@@ -273,7 +269,7 @@ func (r *MySqlCRUD) SelectWhereRange(field string, min, max catrina.Value) <-cha
 	)
 }
 
-func (r *MySqlCRUD) SelectWhereExpression(where string, values []catrina.Value) <-chan catrina.Object {
+func (r *MySqlCRUD) SelectWhereExpression(where string, values []catrina.Value) (<-chan catrina.Row, error) {
 
 	return r.selectMany(where, r.castValues(values))
 }
