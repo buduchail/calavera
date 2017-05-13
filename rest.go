@@ -17,25 +17,24 @@ type (
 		Options() (
 			code int, body Payload, err error,
 		)
-		Post(parentIds []ResourceID, payload Payload) (
+		Post(parentIds []string, payload Payload) (
 			code int, body Payload, err error,
 		)
-		Get(id ResourceID, parentIds []ResourceID) (
+		Get(id string, parentIds []string) (
 			code int, body Payload, err error,
 		)
-		GetMany(parentIds []ResourceID, query QueryParameters) (
+		GetMany(parentIds []string, query QueryParameters) (
 			code int, body Payload, err error,
 		)
-		Put(id ResourceID, parentIds []ResourceID, payload Payload) (
+		Put(id string, parentIds []string, payload Payload) (
 			code int, body Payload, err error,
 		)
-		Delete(id ResourceID, parentIds []ResourceID) (
+		Delete(id string, parentIds []string) (
 			code int, body Payload, err error,
 		)
 	}
 
 	// Some syntactic sugar
-	ResourceID string
 	Payload []byte
 	QueryParameters map[string][]string
 

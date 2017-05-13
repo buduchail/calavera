@@ -45,7 +45,7 @@ func (api *NetHTTP) sendResponse(w http.ResponseWriter, code int, body catrina.P
 	return err
 }
 
-func (api *NetHTTP) handleResource(method string, id catrina.ResourceID, parentIds []catrina.ResourceID, r *http.Request, handler catrina.ResourceHandler) (code int, body catrina.Payload, err error) {
+func (api *NetHTTP) handleResource(method string, id string, parentIds []string, r *http.Request, handler catrina.ResourceHandler) (code int, body catrina.Payload, err error) {
 
 	switch method {
 	case "OPTIONS":

@@ -32,11 +32,11 @@ func (api GoRestfulAPI) getQueryParameters(rq *restful.Request) catrina.QueryPar
 	return catrina.QueryParameters(rq.Request.URL.Query())
 }
 
-func (api GoRestfulAPI) getParentIds(rq *restful.Request, idParams []string) (ids []catrina.ResourceID) {
-	ids = make([]catrina.ResourceID, 0)
+func (api GoRestfulAPI) getParentIds(rq *restful.Request, idParams []string) (ids []string) {
+	ids = make([]string, 0)
 	for _, id := range idParams {
 		// prepend: /grandparent/1/parent/2/child/3 -> [2,1]
-		ids = append([]catrina.ResourceID{catrina.ResourceID(rq.Request.URL.Query().Get(id))}, ids...)
+		ids = append([]string{rq.Request.URL.Query().Get(id)}, ids...)
 	}
 	return ids
 }
@@ -67,7 +67,7 @@ func (api GoRestfulAPI) AddResource(name string, handler catrina.ResourceHandler
 
 	getRoute := func(rq *restful.Request, rp *restful.Response) {
 		code, body, err := handler.Get(
-			catrina.ResourceID(rq.PathParameter("id")),
+			rq.PathParameter("id"),
 			api.getParentIds(rq, parentIdParams),
 		)
 		api.sendResponse(rp, code, body, err)
@@ -83,7 +83,7 @@ func (api GoRestfulAPI) AddResource(name string, handler catrina.ResourceHandler
 
 	putRoute := func(rq *restful.Request, rp *restful.Response) {
 		code, body, err := handler.Put(
-			catrina.ResourceID(rq.PathParameter("id")),
+			rq.PathParameter("id"),
 			api.getParentIds(rq, parentIdParams),
 			api.getBody(rq),
 		)
@@ -92,7 +92,7 @@ func (api GoRestfulAPI) AddResource(name string, handler catrina.ResourceHandler
 
 	deleteRoute := func(rq *restful.Request, rp *restful.Response) {
 		code, body, err := handler.Delete(
-			catrina.ResourceID(rq.PathParameter("id")),
+			rq.PathParameter("id"),
 			api.getParentIds(rq, parentIdParams),
 		)
 		api.sendResponse(rp, code, body, err)

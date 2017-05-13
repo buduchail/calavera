@@ -32,11 +32,11 @@ func (api HttpRouterAPI) getQueryParameters(r *http.Request) catrina.QueryParame
 	return catrina.QueryParameters(r.URL.Query())
 }
 
-func (api HttpRouterAPI) getParentIds(ps httprouter.Params, idParams []string) (ids []catrina.ResourceID) {
-	ids = make([]catrina.ResourceID, 0)
+func (api HttpRouterAPI) getParentIds(ps httprouter.Params, idParams []string) (ids []string) {
+	ids = make([]string, 0)
 	for _, id := range idParams {
 		// prepend: /grandparent/1/parent/2/child/3 -> [2,1]
-		ids = append([]catrina.ResourceID{catrina.ResourceID(ps.ByName(id))}, ids...)
+		ids = append([]string{ps.ByName(id)}, ids...)
 	}
 	return ids
 }
@@ -66,7 +66,7 @@ func (api HttpRouterAPI) AddResource(name string, handler catrina.ResourceHandle
 
 	getRoute := func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		code, body, err := handler.Get(
-			catrina.ResourceID(ps.ByName(idParam)),
+			ps.ByName(idParam),
 			api.getParentIds(ps, parentIdParams),
 		)
 		api.sendResponse(w, code, body, err)
@@ -82,7 +82,7 @@ func (api HttpRouterAPI) AddResource(name string, handler catrina.ResourceHandle
 
 	putRoute := func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		code, body, err := handler.Put(
-			catrina.ResourceID(ps.ByName(idParam)),
+			ps.ByName(idParam),
 			api.getParentIds(ps, parentIdParams),
 			api.getBody(r),
 		)
@@ -91,7 +91,7 @@ func (api HttpRouterAPI) AddResource(name string, handler catrina.ResourceHandle
 
 	deleteRoute := func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		code, body, err := handler.Delete(
-			catrina.ResourceID(ps.ByName(idParam)),
+			ps.ByName(idParam),
 			api.getParentIds(ps, parentIdParams),
 		)
 		api.sendResponse(w, code, body, err)

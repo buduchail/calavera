@@ -40,11 +40,11 @@ func (api IrisAPI) getQueryParameters(c *iris.Context) catrina.QueryParameters {
 	return params
 }
 
-func (api IrisAPI) getParentIds(c *iris.Context, idParams []string) (ids []catrina.ResourceID) {
-	ids = make([]catrina.ResourceID, 0)
+func (api IrisAPI) getParentIds(c *iris.Context, idParams []string) (ids []string) {
+	ids = make([]string, 0)
 	for _, id := range idParams {
 		// prepend: /grandparent/1/parent/2/child/3 -> [2,1]
-		ids = append([]catrina.ResourceID{catrina.ResourceID(c.Param(id))}, ids...)
+		ids = append([]string{c.Param(id)}, ids...)
 	}
 	return ids
 }
@@ -63,7 +63,7 @@ func (api IrisAPI) AddResource(name string, handler catrina.ResourceHandler) {
 
 	postRoute := func(c *iris.Context) {
 		code, body, err := handler.Post(
-			[]catrina.ResourceID{},
+			[]string{},
 			api.getBody(c),
 		)
 		api.sendResponse(c, code, body, err)
@@ -71,7 +71,7 @@ func (api IrisAPI) AddResource(name string, handler catrina.ResourceHandler) {
 
 	getRoute := func(c *iris.Context) {
 		code, body, err := handler.Get(
-			catrina.ResourceID(c.Param(idParam)),
+			c.Param(idParam),
 			api.getParentIds(c, parentIdParams),
 		)
 		api.sendResponse(c, code, body, err)
@@ -87,7 +87,7 @@ func (api IrisAPI) AddResource(name string, handler catrina.ResourceHandler) {
 
 	putRoute := func(c *iris.Context) {
 		code, body, err := handler.Put(
-			catrina.ResourceID(c.Param(idParam)),
+			c.Param(idParam),
 			api.getParentIds(c, parentIdParams),
 			api.getBody(c),
 		)
@@ -96,7 +96,7 @@ func (api IrisAPI) AddResource(name string, handler catrina.ResourceHandler) {
 
 	deleteRoute := func(c *iris.Context) {
 		code, body, err := handler.Delete(
-			catrina.ResourceID(c.Param(idParam)),
+			c.Param(idParam),
 			api.getParentIds(c, parentIdParams),
 		)
 		api.sendResponse(c, code, body, err)

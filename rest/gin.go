@@ -33,11 +33,11 @@ func (api GinAPI) getQueryParameters(c *gin.Context) catrina.QueryParameters {
 	return catrina.QueryParameters(c.Request.URL.Query())
 }
 
-func (api GinAPI) getParentIds(c *gin.Context, idParams []string) (ids []catrina.ResourceID) {
-	ids = make([]catrina.ResourceID, 0)
+func (api GinAPI) getParentIds(c *gin.Context, idParams []string) (ids []string) {
+	ids = make([]string, 0)
 	for _, id := range idParams {
 		// prepend: /grandparent/1/parent/2/child/3 -> [2,1]
-		ids = append([]catrina.ResourceID{catrina.ResourceID(c.Param(id))}, ids...)
+		ids = append([]string{c.Param(id)}, ids...)
 	}
 	return ids
 }
@@ -68,7 +68,7 @@ func (api GinAPI) AddResource(name string, handler catrina.ResourceHandler) {
 
 	getRoute := func(c *gin.Context) {
 		code, body, err := handler.Get(
-			catrina.ResourceID(c.Param(idParam)),
+			c.Param(idParam),
 			api.getParentIds(c, parentIdParams),
 		)
 		api.sendResponse(c, code, body, err)
@@ -84,7 +84,7 @@ func (api GinAPI) AddResource(name string, handler catrina.ResourceHandler) {
 
 	putRoute := func(c *gin.Context) {
 		code, body, err := handler.Put(
-			catrina.ResourceID(c.Param(idParam)),
+			c.Param(idParam),
 			api.getParentIds(c, parentIdParams),
 			api.getBody(c),
 		)
@@ -93,7 +93,7 @@ func (api GinAPI) AddResource(name string, handler catrina.ResourceHandler) {
 
 	deleteRoute := func(c *gin.Context) {
 		code, body, err := handler.Delete(
-			catrina.ResourceID(c.Param(idParam)),
+			c.Param(idParam),
 			api.getParentIds(c, parentIdParams),
 		)
 		api.sendResponse(c, code, body, err)

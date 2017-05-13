@@ -32,11 +32,11 @@ func (api EchoAPI) getQueryParameters(c echo.Context) catrina.QueryParameters {
 	return catrina.QueryParameters(c.QueryParams())
 }
 
-func (api EchoAPI) getParentIds(c echo.Context, idParams []string) (ids []catrina.ResourceID) {
-	ids = make([]catrina.ResourceID, 0)
+func (api EchoAPI) getParentIds(c echo.Context, idParams []string) (ids []string) {
+	ids = make([]string, 0)
 	for _, id := range idParams {
 		// prepend: /grandparent/1/parent/2/child/3 -> [2,1]
-		ids = append([]catrina.ResourceID{catrina.ResourceID(c.Param(id))}, ids...)
+		ids = append([]string{c.Param(id)}, ids...)
 	}
 	return ids
 }
@@ -67,7 +67,7 @@ func (api EchoAPI) AddResource(name string, handler catrina.ResourceHandler) {
 
 	getRoute := func(c echo.Context) error {
 		code, body, err := handler.Get(
-			catrina.ResourceID(c.Param(idParam)),
+			c.Param(idParam),
 			api.getParentIds(c, parentIdParams),
 		)
 		return api.sendResponse(c, code, body, err)
@@ -83,7 +83,7 @@ func (api EchoAPI) AddResource(name string, handler catrina.ResourceHandler) {
 
 	putRoute := func(c echo.Context) error {
 		code, body, err := handler.Put(
-			catrina.ResourceID(c.Param(idParam)),
+			c.Param(idParam),
 			api.getParentIds(c, parentIdParams),
 			api.getBody(c),
 		)
@@ -92,7 +92,7 @@ func (api EchoAPI) AddResource(name string, handler catrina.ResourceHandler) {
 
 	deleteRoute := func(c echo.Context) error {
 		code, body, err := handler.Delete(
-			catrina.ResourceID(c.Param(idParam)),
+			c.Param(idParam),
 			api.getParentIds(c, parentIdParams),
 		)
 		return api.sendResponse(c, code, body, err)

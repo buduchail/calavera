@@ -50,7 +50,7 @@ func (api FastAPI) sendResponse(ctx *fasthttp.RequestCtx, code int, body catrina
 	return err
 }
 
-func (api FastAPI) handleResource(method string, id catrina.ResourceID, parentIds []catrina.ResourceID, ctx *fasthttp.RequestCtx, handler catrina.ResourceHandler) (code int, body catrina.Payload, err error) {
+func (api FastAPI) handleResource(method string, id string, parentIds []string, ctx *fasthttp.RequestCtx, handler catrina.ResourceHandler) (code int, body catrina.Payload, err error) {
 
 	switch method {
 	case "POST":

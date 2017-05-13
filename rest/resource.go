@@ -20,22 +20,22 @@ func (s ResourceHandler) Options() (code int, body catrina.Payload, err error) {
 	return http.StatusOK, catrina.EmptyBody, nil
 }
 
-func (s ResourceHandler) Post(parentIds []catrina.ResourceID, payload catrina.Payload) (code int, body catrina.Payload, err error) {
+func (s ResourceHandler) Post(parentIds []string, payload catrina.Payload) (code int, body catrina.Payload, err error) {
 	return http.StatusMethodNotAllowed, catrina.EmptyBody, nil
 }
 
-func (s ResourceHandler) Get(id catrina.ResourceID, parentIds []catrina.ResourceID) (code int, body catrina.Payload, err error) {
+func (s ResourceHandler) Get(id string, parentIds []string) (code int, body catrina.Payload, err error) {
 	return http.StatusMethodNotAllowed, catrina.EmptyBody, nil
 }
 
-func (s ResourceHandler) GetMany(parentIds []catrina.ResourceID, params catrina.QueryParameters) (code int, body catrina.Payload, err error) {
+func (s ResourceHandler) GetMany(parentIds []string, params catrina.QueryParameters) (code int, body catrina.Payload, err error) {
 	return http.StatusMethodNotAllowed, catrina.EmptyBody, nil
 }
 
-func (s ResourceHandler) Put(id catrina.ResourceID, parentIds []catrina.ResourceID, payload catrina.Payload) (code int, body catrina.Payload, err error) {
+func (s ResourceHandler) Put(id string, parentIds []string, payload catrina.Payload) (code int, body catrina.Payload, err error) {
 	return http.StatusMethodNotAllowed, catrina.EmptyBody, nil
 }
 
-func (s ResourceHandler) Delete(id catrina.ResourceID, parentIds []catrina.ResourceID) (code int, body catrina.Payload, err error) {
+func (s ResourceHandler) Delete(id string, parentIds []string) (code int, body catrina.Payload, err error) {
 	return http.StatusMethodNotAllowed, catrina.EmptyBody, nil
 }

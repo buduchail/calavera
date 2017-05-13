@@ -39,10 +39,10 @@ func (ph *pathHandler) addHandler(path string, handler catrina.ResourceHandler) 
 	p.handler = handler
 }
 
-func (ph *pathHandler) findHandler(path string) (handler catrina.ResourceHandler, id catrina.ResourceID, parentIds []catrina.ResourceID) {
+func (ph *pathHandler) findHandler(path string) (handler catrina.ResourceHandler, id string, parentIds []string) {
 	handler = nil
 	id = ""
-	parentIds = make([]catrina.ResourceID, 0)
+	parentIds = make([]string, 0)
 
 	scanner := bufio.NewScanner(strings.NewReader(path))
 
@@ -76,7 +76,7 @@ func (ph *pathHandler) findHandler(path string) (handler catrina.ResourceHandler
 			}
 			p = child
 		} else {
-			parentIds = append(parentIds, catrina.ResourceID(scanner.Text()))
+			parentIds = append(parentIds, scanner.Text())
 		}
 	}
 
@@ -85,5 +85,5 @@ func (ph *pathHandler) findHandler(path string) (handler catrina.ResourceHandler
 		parentIds = parentIds[:parts-1]
 	}
 
-	return p.handler, catrina.ResourceID(id), parentIds
+	return p.handler, id, parentIds
 }
